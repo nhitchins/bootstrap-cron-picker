@@ -4,7 +4,8 @@
   "description": "CronPicker is a javascript library that provides easy to use interface for generating CRON expressions.",
   "main": "src/cron-picker.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "preinstall": "npx npm-force-resolutions"
   },
   "author": "Constantine Lebedev <koss.lebedev@gmail.com>",
   "license": "MIT",
@@ -21,5 +22,8 @@
   "peerdependencies": {
     "bootstrap": "^3.3.7",
     "jquery": "^3.2.1"
+  },
+  "resolutions": {
+    "graceful-fs": "^4.2.4"
   }
 }
