@@ -7,7 +7,6 @@
 CronPicker is a javascript library that provides easy to use 
 interface for generating CRON expressions.
 
-TODO: add preview gif
 
 ## Features
 
@@ -51,4 +50,10 @@ $('#cron-picker').cronPicker({
             console.log(cron);
         }
     });
+```
+
+To remove CronPicker from the input call the `destroy` method:
+
+```javascript
+$('#cron-picker').cronPicker('destroy');
 ```
