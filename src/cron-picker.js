@@ -115,6 +115,12 @@
             });
         }
 
+        _destroyMonthlyFilter() {
+            this.wrapper.find('.cron-picker-day-filter select').each(function(){
+                $(this).off('change');
+            })
+        }
+
         _buildOrdinalityOptions() {
             return [
                 ['First', '#1'], ['Second', '#2'], ['Third', '#3'], ['Last', 'L'],
@@ -150,13 +156,19 @@
             return $('<div>', {
                 class: 'cron-picker-time',
                 html: [
-                    'Run at:',
+                    'Run at',
                     this._buildHourPicker(),
-                    '-',
+                    ':',
                     this._buildMinutesPicker(),
                     this._buildAMPMPicker()
                 ]
             });
+        }
+
+        _destroyTimePicker() {
+            this.wrapper.find('.cron-picker-time select').each(function(){
+                $(this).off('change');
+            })
         }
 
         _buildHourPicker() {
@@ -236,6 +248,12 @@
             });
         }
 
+        _destroyRecurrenceTypes() {
+            this.wrapper.find('.cron-picker-recurrence-types li a').each(function(){
+                $(this).off('click');
+            })
+        }
+
         _buildRecurrenceType(type) {
             const self = this;
             return $('<li>', {
@@ -254,6 +272,12 @@
                 html: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((item, index) => {
                     return this._buildDayOfWeekButton(item, index + 1);
                 })
+            })
+        }
+
+        _destroyDaysOfWeek() {
+            this.wrapper.find('.cron-picker-dow button').each(function(){
+                $(this).off('click');
             })
         }
 
@@ -347,27 +371,44 @@
             }
         }
 
+        destroy() {
+            // remove control bindings
+            this._destroyRecurrenceTypes()
+            this._destroyDaysOfWeek()
+            this._destroyMonthlyFilter()
+            this._destroyTimePicker()
+            // destroy instance
+            this.wrapper.remove()
+            this.hostControl.removeData('cron-picker')
+            this.hostControl.show()
+        }
+
     }
 
-    $.fn.cronPicker = function (options) {
+    $.fn.cronPicker = function (option, value) {
         const defaults = {
             onCronChanged: null
         };
-        const settings = $.extend({}, defaults, options);
 
-        this.each((i, hostControl) => {
-            hostControl = $(hostControl);
+        this.each(function() {
+            let $this = $(this),
+                data = $this.data('cron-picker'),
+                options = typeof option === 'object' && option;
 
-            if (hostControl.data('cron-picker') === '1')
-                return;
-
-            const wrapper = $(`
-                <div class="cron-picker">
-                </div>`
-            );
-
-            hostControl.after(wrapper).hide().data('cron-picker', '1');
-            return  new CronPicker(wrapper, hostControl, settings);
+            if (!data) {
+                if (option !== "destroy") {
+                    const wrapper = $(`
+                        <div class="cron-picker">
+                        </div>`
+                    );
+                    $this.after(wrapper).hide()
+                    $this.data('cron-picker', (data = new CronPicker(wrapper, $this, $.extend({}, defaults, options))));
+                }
+            } else {
+                if (typeof option === 'string') {
+                    data[option](value);
+                }
+            }
         });
     };
 

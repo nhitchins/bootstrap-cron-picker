@@ -1,6 +1,6 @@
 {
   "name": "bootstrap-cron-picker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CronPicker is a javascript library that provides easy to use interface for generating CRON expressions.",
   "main": "src/cron-picker.js",
   "scripts": {

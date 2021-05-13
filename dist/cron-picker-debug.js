@@ -101,6 +101,8 @@ QuartzCronFormatter.build = function (state) {
 };
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -216,6 +218,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 });
             }
         }, {
+            key: '_destroyMonthlyFilter',
+            value: function _destroyMonthlyFilter() {
+                this.wrapper.find('.cron-picker-day-filter select').each(function () {
+                    $(this).off('change');
+                });
+            }
+        }, {
             key: '_buildOrdinalityOptions',
             value: function _buildOrdinalityOptions() {
                 return [['First', '#1'], ['Second', '#2'], ['Third', '#3'], ['Last', 'L']].map(function (pair) {
@@ -249,7 +258,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             value: function _buildTimePicker() {
                 return $('<div>', {
                     class: 'cron-picker-time',
-                    html: ['Run at:', this._buildHourPicker(), '-', this._buildMinutesPicker(), this._buildAMPMPicker()]
+                    html: ['Run at', this._buildHourPicker(), ':', this._buildMinutesPicker(), this._buildAMPMPicker()]
+                });
+            }
+        }, {
+            key: '_destroyTimePicker',
+            value: function _destroyTimePicker() {
+                this.wrapper.find('.cron-picker-time select').each(function () {
+                    $(this).off('change');
                 });
             }
         }, {
@@ -321,6 +337,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 });
             }
         }, {
+            key: '_destroyRecurrenceTypes',
+            value: function _destroyRecurrenceTypes() {
+                this.wrapper.find('.cron-picker-recurrence-types li a').each(function () {
+                    $(this).off('click');
+                });
+            }
+        }, {
             key: '_buildRecurrenceType',
             value: function _buildRecurrenceType(type) {
                 var self = this;
@@ -343,6 +366,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     html: ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map(function (item, index) {
                         return _this._buildDayOfWeekButton(item, index + 1);
                     })
+                });
+            }
+        }, {
+            key: '_destroyDaysOfWeek',
+            value: function _destroyDaysOfWeek() {
+                this.wrapper.find('.cron-picker-dow button').each(function () {
+                    $(this).off('click');
                 });
             }
         }, {
@@ -436,6 +466,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     this.settings.onCronChanged(cronExpression);
                 }
             }
+        }, {
+            key: 'destroy',
+            value: function destroy() {
+                // remove control bindings
+                this._destroyRecurrenceTypes();
+                this._destroyDaysOfWeek();
+                this._destroyMonthlyFilter();
+                this._destroyTimePicker();
+                // destroy instance
+                this.wrapper.remove();
+                this.hostControl.removeData('cron-picker');
+                this.hostControl.show();
+            }
         }], [{
             key: '_buildOptions',
             value: function _buildOptions(max, offset) {
@@ -449,21 +492,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return CronPicker;
     }();
 
-    $.fn.cronPicker = function (options) {
+    $.fn.cronPicker = function (option, value) {
         var defaults = {
             onCronChanged: null
         };
-        var settings = $.extend({}, defaults, options);
 
-        this.each(function (i, hostControl) {
-            hostControl = $(hostControl);
+        this.each(function () {
+            var $this = $(this),
+                data = $this.data('cron-picker'),
+                options = (typeof option === 'undefined' ? 'undefined' : _typeof(option)) === 'object' && option;
 
-            if (hostControl.data('cron-picker') === '1') return;
-
-            var wrapper = $('\n                <div class="cron-picker">\n                </div>');
-
-            hostControl.after(wrapper).hide().data('cron-picker', '1');
-            return new CronPicker(wrapper, hostControl, settings);
+            if (!data) {
+                if (option !== "destroy") {
+                    var wrapper = $('\n                        <div class="cron-picker">\n                        </div>');
+                    $this.after(wrapper).hide();
+                    $this.data('cron-picker', data = new CronPicker(wrapper, $this, $.extend({}, defaults, options)));
+                }
+            } else {
+                if (typeof option === 'string') {
+                    data[option](value);
+                }
+            }
         });
     };
 })(jQuery);
