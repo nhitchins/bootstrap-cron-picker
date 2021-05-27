@@ -350,6 +350,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 return $('<li>', {
                     'data-type': type,
                     html: $('<a>', { text: type }).on('click', function () {
+                        if (this.parentNode.classList.contains('disabled')) return;
                         self.state.type = this.parentNode.getAttribute('data-type');
                         self._buildCronExpression();
                         self._updateUI();
